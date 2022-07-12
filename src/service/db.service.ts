@@ -104,5 +104,5 @@ export async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
 
 export async function rowCount(filter: any) : Promise<number> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
-  return await caches.countDocuments({$where: filter});
+  return await caches.find(filter).count();
 }
