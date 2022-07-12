@@ -72,7 +72,8 @@ export const get = async (key: string) : Promise<string> => {
 };
 
 export const getAll = async () => {
-    return DBService.query();
+    const objects = await DBService.query(["key"]);
+    return objects.map(o => o["key"]);
 };
 
 export const remove = async (key: string) => {

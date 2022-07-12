@@ -50,9 +50,18 @@ export async function read(key: string): Promise<ICache> {
   return cacheWithId as ICache;
 }
 
-export async function query(from?: number, pageSize?: number) : Promise<ICache[]> {
+export async function query(fields: string[], from?: number, pageSize?: number) : Promise<ICache[]> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
-  let cursor = caches.find();
+
+  let cursor;
+
+  if(fields && fields.length > 0) {
+    const selectFields: any = {};
+    fields.forEach( (f: string) => selectFields[f] = 1);
+    cursor = caches.find({}, selectFields);
+  } else {
+    cursor = caches.find();
+  }
 
   if (from) {
     cursor = cursor
@@ -61,12 +70,7 @@ export async function query(from?: number, pageSize?: number) : Promise<ICache[]
       .limit(pageSize || DEFAULT_PAGE_SIZE);
   }
 
-  let retValue: ICache[] = [];
-  cursor.forEach((c) => {
-    retValue.push(c);
-  });
-
-  return retValue;
+  return await cursor.toArray();
 }
 
 export async function remove(key: string): Promise<boolean> {
