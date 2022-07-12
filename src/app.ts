@@ -53,11 +53,6 @@ app.use(errorHandler);
 app.use(notFoundHandler);
 
 /**
- * DB Connect
- */
- DBService.connect().catch( (err: any) => console.log("error while db connect: ", err));
-
-/**
  * start the server on separate file.
  * That way test cases can use this app for testing purposes
  */

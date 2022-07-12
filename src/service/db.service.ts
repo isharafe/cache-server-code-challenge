@@ -19,13 +19,14 @@ import { ICache } from "../model/cache.db.model";
 const DEFAULT_PAGE_SIZE = 100;
 const NO_SKIP = 0;
 
-const dbUri = process.env.DB_CON_URL as string;
-const mongoClient = new MongoClient(dbUri);
-const database = mongoClient.db("fashion_cloud_caches_ruc");
-
 const COLLECTIONS = {
   CACHES: "caches",
 };
+
+const dbUri = process.env.DB_CON_URL as string;
+const dbName = process.env.DB_NAME;
+const mongoClient = new MongoClient(dbUri);
+const database = mongoClient.db(dbName);
 
 /** */
 export async function save(data: ICache): Promise<ICache> {
