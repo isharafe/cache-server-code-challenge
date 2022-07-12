@@ -39,6 +39,7 @@ export const startCronDBClearJob = () => {
     cron.schedule(cronSheduleExpression, () => {
         logInfo(`running a db clear task : ${cronSheduleExpression}`);
         removeExpiredCaches();
+        removeExcessiveCaches();
     });
 }
 

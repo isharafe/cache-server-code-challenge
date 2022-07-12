@@ -84,7 +84,7 @@ export async function removeByFilter(filter: any) {
 
 export async function removeAll(): Promise<boolean> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
-  const recordCount = await caches.count();
+  const recordCount = await caches.estimatedDocumentCount();
   if(recordCount > 0 ) {
     const result = await caches.deleteMany({});
     return result.deletedCount > 0;
@@ -104,5 +104,5 @@ export async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
 
 export async function rowCount(filter: any) : Promise<number> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
-  return await caches.find(filter).count();
+  return await caches.countDocuments({$where: filter});
 }
