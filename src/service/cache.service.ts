@@ -15,23 +15,6 @@ import { ICache } from "../model/cache.db.model";
 import * as DBService from "./db.service";
 import * as LogService from "./log.service";
 
-/**
- * There is a limit to cache store.
- * how can we decide this limit
- * 1). hard code a sensible value
- *      -- easy to use
- *      -- hard to change
- * 2). save this value in db and change as necessary
- *      -- need a ui or an endpoint to update this value
- *      -- easy to manag cache limit
- * 3). write a logic to automatically adjust the max size based on available resources
- *      -- too much work
- *      -- don't need to worry about max size, as system will automatically take care of it
- *
- * for this code assignment, I'll go with above option 1) as it is easy to implement
- */
-const MAX_CACHE_ENTRIES = 100;
-
 const DEFAULT_TTL_SECONDS = 1000;
 
 export const set = async (key: string, value: any, ttl?: number) : Promise<ICache> => {
@@ -60,6 +43,8 @@ export const get = async (key: string) : Promise<string> => {
 
     if(value && expireDate && expireDate?.getTime() >= now) {
         LogService.logInfo("Cache hit");
+        value.hitCount = value.hitCount || 0;
+        value.hitCount ++;
         DBService.updateTTL(value, value.ttl || (DEFAULT_TTL_SECONDS * 1000));
         retValue = value.value;
     } else {
@@ -73,7 +58,7 @@ export const get = async (key: string) : Promise<string> => {
 };
 
 export const getAll = async (from?: number, pageSize?: number) => {
-    const objects = await DBService.query(["key"], from, pageSize);
+    const objects = await DBService.query({}, ["key"], from, pageSize);
     return objects.map(o => o["key"]);
 };
 

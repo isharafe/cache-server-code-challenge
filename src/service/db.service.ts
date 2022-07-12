@@ -23,14 +23,14 @@ dotenv.config({ path: `./env/${environment}.env`});
 const DEFAULT_PAGE_SIZE = 100;
 const NO_SKIP = 0;
 
-const COLLECTIONS = {
+export const COLLECTIONS = {
   CACHES: "caches",
 };
 
 const dbUri = process.env.DB_CON_URL as string;
 const dbName = process.env.DB_NAME;
 const mongoClient = new MongoClient(dbUri);
-const database = mongoClient.db(dbName);
+export const database = mongoClient.db(dbName);
 
 /** */
 export async function save(data: ICache): Promise<ICache> {
@@ -50,21 +50,18 @@ export async function read(key: string): Promise<ICache> {
   return cacheWithId as ICache;
 }
 
-export async function query(fields: string[], from?: number, pageSize?: number) : Promise<ICache[]> {
+export async function query(filter?: any, fields?: string[], from?: number, pageSize?: number) : Promise<ICache[]> {
+
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
-
-  let cursor;
-
-  if(fields && fields.length > 0) {
-    const selectFields: any = {};
+  const selectFields: any = {};
+  if(fields && fields.length  > 0) {
     fields.forEach( (f: string) => selectFields[f] = 1);
-    cursor = caches.find({}, selectFields);
-  } else {
-    cursor = caches.find();
   }
 
+  const cursor = caches.find(filter, selectFields);
+
   if (from) {
-    cursor = cursor
+    cursor
       .sort({ key: -1 })
       .skip(from || NO_SKIP)
       .limit(pageSize || DEFAULT_PAGE_SIZE);
@@ -77,6 +74,12 @@ export async function remove(key: string): Promise<boolean> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
   const result = await caches.deleteOne({key: key});
   return result.deletedCount > 0;
+}
+
+export async function removeByFilter(filter: any) {
+  const caches = database.collection<ICache>(COLLECTIONS.CACHES);
+  const result = await caches.deleteMany(filter);
+  return result.deletedCount;
 }
 
 export async function removeAll(): Promise<boolean> {
@@ -97,4 +100,9 @@ export async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
     obj.expireAt = newExpireDate;
 
     return save(obj);
+}
+
+export async function rowCount(filter: any) : Promise<number> {
+  const caches = database.collection<ICache>(COLLECTIONS.CACHES);
+  return await caches.find(filter).count();
 }

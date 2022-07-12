@@ -7,4 +7,5 @@ export interface ICache {
     ttl: number;
     createdAt: Date;
     expireAt: Date;
+    hitCount?: number;
 }
