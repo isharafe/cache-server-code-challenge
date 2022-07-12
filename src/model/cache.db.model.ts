@@ -3,6 +3,8 @@
  */
 export interface ICache {
     key: string;
-    value?: string;
-    ttl?: number;
+    value: string;
+    ttl: number;
+    createdAt: Date;
+    expireAt: Date;
 }
