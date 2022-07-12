@@ -45,7 +45,7 @@ cacheRouter.post("/:key", async (req: Request, res: Response) => {
 
     try {
         const cache: ICacheRequest = req.body;
-        const saved = CacheService.set(key, cache);
+        const saved = await CacheService.set(key, cache.value);
 
         // TODO: if new cache, return 201. else if this is an update, return 200
         res.status(200).send(saved);
