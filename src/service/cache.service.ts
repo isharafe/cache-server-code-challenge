@@ -57,6 +57,7 @@ export const get = async (key: string) : Promise<string> => {
     const now = new Date().getTime();
     let retValue;
     let expireDate = value?.expireAt;
+
     if(value && expireDate && expireDate?.getTime() >= now) {
         LogService.logInfo("Cache hit");
         DBService.updateTTL(value, value.ttl || (DEFAULT_TTL_SECONDS * 1000));
@@ -71,8 +72,8 @@ export const get = async (key: string) : Promise<string> => {
     return retValue;
 };
 
-export const getAll = async () => {
-    const objects = await DBService.query(["key"]);
+export const getAll = async (from?: number, pageSize?: number) => {
+    const objects = await DBService.query(["key"], from, pageSize);
     return objects.map(o => o["key"]);
 };
 

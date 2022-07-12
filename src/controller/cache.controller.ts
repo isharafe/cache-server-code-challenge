@@ -17,8 +17,11 @@ export const cacheRouter = express.Router();
 
 // GET all keys
 cacheRouter.get("/", async (req: Request, res: Response) => {
+    const from: number = parseInt(req.query.from as string, 10);
+    const pageSize: number = parseInt(req.query.pageSize as string, 10);
+
     try {
-        const cashes = await CacheService.getAll();
+        const cashes = await CacheService.getAll(from, pageSize);
         res.status(200).send(cashes);
     } catch (e: any) {
         res.status(500).send(e.message);
