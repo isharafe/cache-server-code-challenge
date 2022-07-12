@@ -44,29 +44,16 @@ cacheRouter.get("/:key", async (req: Request, res: Response) => {
 });
 
 // POST insert/update cache
-cacheRouter.post("/", async (req: Request, res: Response) => {
+cacheRouter.post("/:key", async (req: Request, res: Response) => {
+    const key: string = req.params.key;
+
     try {
         const cache: ICacheRequest = req.body;
-        const cacheKey = cache.key;
 
         // TODO: insert/update cache
 
+        // if new cache return 201, else if this is an update, return 200
         res.status(201).send(/* TODO */);
-    } catch (e: any) {
-        res.status(500).send(e.message);
-    }
-});
-
-// PUT update value of a key
-cacheRouter.put("/:key", async (req: Request, res: Response) => {
-    const key: string = req.params.key;
-    try {
-        const cache: ICacheRequest = req.body;
-        cache.key = key;    // make sure the key value is consistent
-
-        // TODO
-
-        res.status(200).send(/* TODO */);
     } catch (e: any) {
         res.status(500).send(e.message);
     }

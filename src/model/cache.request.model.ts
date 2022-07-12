@@ -4,4 +4,5 @@
 export interface ICacheRequest {
     key: string;
     value?: string;
+    ttl?: number;
 }
