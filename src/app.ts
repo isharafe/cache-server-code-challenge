@@ -10,7 +10,6 @@ import helmet from "helmet";
 import { cacheRouter } from "./controller/cache.controller";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
-import * as DBService from "./service/db.service";
 
 /* load .env file for the required environment */
 /* environment name should be set to NODE_ENV env variable, baed on that related env config file will be loaded */

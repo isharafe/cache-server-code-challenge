@@ -36,12 +36,13 @@ const DEFAULT_TTL_SECONDS = 1000;
 
 export const set = async (key: string, value: any, ttl?: number) : Promise<ICache> => {
 
-    const now: number = new Date().getDate();
+    const now: number = new Date().getTime();
     ttl = ttl || DEFAULT_TTL_SECONDS;
+    const expireDate = new Date(now + ttl);
 
     const dbRecord = {
         createdAt: new Date(),
-        expireAt: new Date(now + ttl),
+        expireAt: expireDate,
         key: key,
         value: value,
         ttl: ttl
@@ -53,10 +54,10 @@ export const set = async (key: string, value: any, ttl?: number) : Promise<ICach
 export const get = async (key: string) : Promise<string> => {
 
     const value = await DBService.read(key);
-    const now = new Date().getDate();
+    const now = new Date().getTime();
     let retValue;
     let expireDate = value?.expireAt;
-    if(value && expireDate && expireDate?.getDate() >= now) {
+    if(value && expireDate && expireDate?.getTime() >= now) {
         LogService.logInfo("Cache hit");
         DBService.updateTTL(value, value.ttl || DEFAULT_TTL_SECONDS);
         retValue = value.value;
@@ -68,6 +69,18 @@ export const get = async (key: string) : Promise<string> => {
     }
 
     return retValue;
+};
+
+export const getAll = async () => {
+    return DBService.query();
+};
+
+export const remove = async (key: string) => {
+    return DBService.remove(key);
+};
+
+export const removeAll = async () => {
+    return DBService.removeAll();
 };
 
 /**

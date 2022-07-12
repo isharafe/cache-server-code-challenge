@@ -1,4 +1,10 @@
 import app from "./app";
+import * as dotenv from "dotenv";
+
+/* load .env file for the required environment */
+/* environment name should be set to NODE_ENV env variable, baed on that related env config file will be loaded */
+const environment = process.env.NODE_ENV;
+dotenv.config({ path: `./env/${environment}.env`});
 
 if (!process.env.PORT) {
     process.exit(1);

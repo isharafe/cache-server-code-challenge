@@ -2,8 +2,12 @@
  * Manage the db connection and related operations
  */
 
-import { Collection, MongoClient, MongoCursorInUseError } from "mongodb";
+import { MongoClient } from "mongodb";
 import { ICache } from "../model/cache.db.model";
+import * as dotenv from "dotenv";
+
+const environment = process.env.NODE_ENV;
+dotenv.config({ path: `./env/${environment}.env`});
 
 /**
  * db operations need to implement
@@ -33,7 +37,9 @@ export async function save(data: ICache): Promise<ICache> {
   const caches = database.collection<ICache>(COLLECTIONS.CACHES);
 
   // update if maching key record found, o/w insert a new record
-  const result = await caches.updateOne({key: data.key}, data, {upsert: true});
+  const result = await caches.updateOne({key: data.key}, {
+    $set: data
+  }, {upsert: true});
   const saved = {...data, _id: result.upsertedId};
   return saved;
 }
@@ -83,7 +89,7 @@ export async function removeAll(): Promise<boolean> {
 
 export async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
     const expireDate = obj.expireAt || new Date();
-    const newExpireDate = new Date(expireDate.getDate() + ttl);
+    const newExpireDate = new Date(expireDate.getTime() + ttl);
     obj.expireAt = newExpireDate;
 
     return save(obj);
