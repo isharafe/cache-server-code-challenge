@@ -5,7 +5,9 @@
   "main": "run.js",
   "scripts": {
     "test": "test",
-    "start": "node run.js"
+    "start": "tsc node src/run.ts",
+    "env-prod": "cross-env NODE_ENV=prod npm run start",
+    "env-dev": "cross-env NODE_ENV=dev npm run start"
   },
   "repository": {
     "type": "git",
@@ -29,7 +31,8 @@
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.1",
     "helmet": "^5.1.0",
-    "mongodb": "^4.7.0"
+    "mongodb": "^4.7.0",
+    "node-cron": "^3.0.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
@@ -38,6 +41,7 @@
     "@types/helmet": "^4.0.0",
     "@types/mongodb": "^4.0.7",
     "@types/node": "^18.0.3",
+    "@types/node-cron": "^3.0.2",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"
   }
