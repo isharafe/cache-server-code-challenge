@@ -10,6 +10,7 @@ import helmet from "helmet";
 import { cacheRouter } from "./controller/cache.controller";
 import { errorHandler } from "./middleware/error.middleware";
 import { notFoundHandler } from "./middleware/not-found.middleware";
+import { scheduledDBClean } from "./service/cron.service";
 
 /* load .env file for the required environment */
 /* environment name should be set to NODE_ENV env variable, baed on that related env config file will be loaded */
@@ -50,6 +51,12 @@ app.use(errorHandler);
   * will be catched from here.
   */
 app.use(notFoundHandler);
+
+
+/**
+ * start a cron job to automatically clean expired cache records
+ */
+scheduledDBClean();
 
 /**
  * start the server on separate file.
