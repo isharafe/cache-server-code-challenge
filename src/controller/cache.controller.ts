@@ -3,6 +3,8 @@
  */
 import express, { Request, Response } from "express";
 import { ICacheRequest } from "../model/cache.request.model";
+import * as CacheService from "../service/cache.service";
+
 /**
  * Router Definition
  */
@@ -16,7 +18,8 @@ export const cacheRouter = express.Router();
 // GET all keys
 cacheRouter.get("/", async (req: Request, res: Response) => {
     try {
-        // TODO
+        const cashes = await CacheService.getAll();
+        res.status(200).send(cashes);
     } catch (e: any) {
         res.status(500).send(e.message);
     }
@@ -26,18 +29,8 @@ cacheRouter.get("/", async (req: Request, res: Response) => {
 cacheRouter.get("/:key", async (req: Request, res: Response) => {
     const cacheKey: string = req.params.key;
     try {
-        // TODO
-        /**
-         * If the key is not found in the cache:
-            ■ Log an output “Cache miss”
-            ■ Create a random string
-            ■ Update the cache with this random string
-            ■ Return the random string
-        ○ If the key is found in the cache:
-            ■ Log an output “Cache hit”
-            ■ Get the data for this key
-            ■ Return the data
-         */
+        const cache = await CacheService.get(cacheKey);
+        res.status(200).send(cache);
     } catch (e: any) {
         res.status(500).send(e.message);
     }
@@ -49,11 +42,10 @@ cacheRouter.post("/:key", async (req: Request, res: Response) => {
 
     try {
         const cache: ICacheRequest = req.body;
+        const saved = CacheService.set(key, cache);
 
-        // TODO: insert/update cache
-
-        // if new cache return 201, else if this is an update, return 200
-        res.status(201).send(/* TODO */);
+        // TODO: if new cache, return 201. else if this is an update, return 200
+        res.status(200).send(saved);
     } catch (e: any) {
         res.status(500).send(e.message);
     }
@@ -64,9 +56,8 @@ cacheRouter.delete("/:key", async (req: Request, res: Response) => {
     const key: string = req.params.key;
 
     try {
-        // TODO
-
-        res.status(204).send(/* TODO */);
+        const result = await CacheService.remove(key);
+        res.status(204).send(result);
     } catch (e: any) {
         res.status(500).send(e.message);
     }
@@ -75,9 +66,8 @@ cacheRouter.delete("/:key", async (req: Request, res: Response) => {
 // DELETE all cache
 cacheRouter.delete("/", async (req: Request, res: Response) => {
     try {
-        // TODO
-
-        res.status(204).send(/* TODO */);
+        const result = await CacheService.removeAll();
+        res.status(204).send(result);
     } catch (e: any) {
         res.status(500).send(e.message);
     }
