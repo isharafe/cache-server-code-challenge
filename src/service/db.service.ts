@@ -86,11 +86,3 @@ export async function removeAll(): Promise<boolean> {
   // no records on db to delete
   return true;
 }
-
-export async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
-    const expireDate = obj.expireAt || new Date();
-    const newExpireDate = new Date(expireDate.getTime() + ttl);
-    obj.expireAt = newExpireDate;
-
-    return save(obj);
-}

@@ -59,7 +59,7 @@ export const get = async (key: string) : Promise<string> => {
     let expireDate = value?.expireAt;
     if(value && expireDate && expireDate?.getTime() >= now) {
         LogService.logInfo("Cache hit");
-        DBService.updateTTL(value, value.ttl || (DEFAULT_TTL_SECONDS * 1000));
+        updateTTL(value, value.ttl || (DEFAULT_TTL_SECONDS * 1000));
         retValue = value.value;
     } else {
         LogService.logInfo("Cache miss");
@@ -81,6 +81,18 @@ export const remove = async (key: string) => {
 
 export const removeAll = async () => {
     return DBService.removeAll();
+};
+
+async function updateTTL(obj: ICache, ttl: number): Promise<ICache> {
+    const expireDate = obj.expireAt || new Date();
+    const newExpireDate = new Date(expireDate.getTime() + ttl);
+    obj.expireAt = newExpireDate;
+
+    return DBService.save(obj);
+}
+
+export const clearOldRecord = async () => {
+
 };
 
 /**
