@@ -5,8 +5,6 @@ const supertest = require("supertest");
 const server = app;
 const request = supertest(server);
 
-import * as CacheService from "../../src/service/cache.service";
-
 it("Same value should be returned for multiple requests", async () => {
 
     const response1 = await request.get("/api/cache/abcd");
@@ -30,21 +28,41 @@ it("save a value for a key", async () => {
 
     expect(json.key).toBe('abcd2');
     expect(json.value).toBe('test');
+
+    const response1 = await request.get("/api/cache/abcd2");
+    expect(response1.status).toBe(200);
+    expect(response1.text).toBe("test");
 });
 
-it("Gets the root endpoint", async () => {
+it("Gets all cache keys", async () => {
     // Sends GET Request to / endpoint
     const response = await request.get("/api/cache");
 
     expect(response.status).toBe(200);
-    expect(response.text).toBe('["abcd","abcd2"]');
+    const json: string[] = JSON.parse(response.text);
+    expect(json.some(v => v=='abcd')).toBeTruthy();
+    expect(json.some(v => v=='abcd2')).toBeTruthy();
 });
 
 
-// it("remove a key", async () => {
-//     // Sends GET Request to / endpoint
-//     const response = await request.get("/api/cache");
+it("remove a key", async () => {
+    // Sends GET Request to / endpoint
+    const response = await request.delete("/api/cache/abcd");
+    expect(response.status).toBe(204);
 
-//     expect(response.status).toBe(200);
-//     expect(response.text).toBe('["abcd"]');
-// });
+    const response2 = await request.get("/api/cache");
+    expect(response2.status).toBe(200);
+    const json: string[] = JSON.parse(response2.text);
+    expect(json.some(v => v=='abcd')).toBeFalsy();
+});
+
+it("remove all cache", async () => {
+    // Sends GET Request to / endpoint
+    const response = await request.delete("/api/cache");
+    expect(response.status).toBe(204);
+
+    const response2 = await request.get("/api/cache");
+    expect(response2.status).toBe(200);
+    const json: string[] = JSON.parse(response2.text);
+    expect(json.length).toBe(0);
+});
