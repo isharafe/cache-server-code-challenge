@@ -37,7 +37,7 @@ const DEFAULT_TTL_SECONDS = 1000;
 export const set = async (key: string, value: any, ttl?: number) : Promise<ICache> => {
 
     const now: number = new Date().getTime();
-    ttl = ttl || DEFAULT_TTL_SECONDS;
+    ttl = ttl || (DEFAULT_TTL_SECONDS * 1000);
     const expireDate = new Date(now + ttl);
 
     const dbRecord = {
@@ -59,12 +59,12 @@ export const get = async (key: string) : Promise<string> => {
     let expireDate = value?.expireAt;
     if(value && expireDate && expireDate?.getTime() >= now) {
         LogService.logInfo("Cache hit");
-        DBService.updateTTL(value, value.ttl || DEFAULT_TTL_SECONDS);
+        DBService.updateTTL(value, value.ttl || (DEFAULT_TTL_SECONDS * 1000));
         retValue = value.value;
     } else {
         LogService.logInfo("Cache miss");
-        const newValue = getLatestValue();
-        set(key, newValue, DEFAULT_TTL_SECONDS);
+        const newValue = await getLatestValue();
+        set(key, newValue, (DEFAULT_TTL_SECONDS * 1000));
         retValue = newValue;
     }
 
