@@ -16,3 +16,7 @@ At the moment, NODE_ENV="prod" is used the script (package.json -> scripts -> st
 
 update the related configs in "env/dev.env" or "env/prod.env"
 
+
+## late Branch
+
+I couldn't finish all the aspects with in the given time. I spent another 3 extra hrs for the rest and those changes are pushed to the "late" branch
